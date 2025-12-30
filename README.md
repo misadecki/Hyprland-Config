@@ -17,4 +17,9 @@ My aim was to make simple floating window environment for terminal use in beauti
 - Internet: Firefox (but I'm searching something more secure)
 - GUI file manager: Dolphin (it's not good working with Hyprland, QT6 is necessary)
 - Calculator: Qalculate-gtk
-and many more that aren't listed here.
+- Text editor: NVim
+- Communication: Vesktop (discord fork)
+- Terminal: kitty
+- Shell: zsh
+- Notifications: swaync
+- and many more that aren't listed here.
