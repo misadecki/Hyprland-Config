@@ -19,7 +19,7 @@
         "network",
         "power-profiles-daemon",
         "temperature",
-        "keyboard-state",
+        //"keyboard-state",
         "battery",
         "bluetooth",
         "custom/updates",
@@ -82,10 +82,9 @@
     "temperature": {
         "critical-threshold": 80,
         "format": " {temperatureC}°C {icon}",
-        "format-icons": ["", "", ""],
+        "format-icons": ["", "", ""],
         "on-click": "psensor"
     },
-
     "battery": {
         "states": {
             "good": 80,
@@ -94,7 +93,7 @@
         },
         "format": "{capacity}% {icon}",
         "format-full": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
+        "format-charging": "{capacity}% 󰂄",
         "format-plugged": "{capacity}% ",
         "format-alt": "{time} {icon}",
         "format-icons": ["", "", "", "", ""]
@@ -114,9 +113,9 @@
 
     "network": {
         "format-wifi": "{signalStrength}% ",
-        "format-ethernet": "Connected ",
-        "tooltip-format": "{ifname} via {gwaddr} ",
-        "format-linked": "{ifname} (No IP) ",
+        "format-ethernet": "Connected 󰈁",
+        "tooltip-format": "{ifname} via {gwaddr} ",
+        "format-linked": "{ifname} (No IP) 󰈂",
         "format-disconnected": "Disconnected ⚠",
         "format-alt": "{ifname}: {ipaddr}/{cidr}",
         "on-click-right": "nm-connection-editor"
@@ -126,14 +125,14 @@
         "on-click": "pavucontrol",
         "format": "{volume}% {icon} {format_source}",
         "format-bluetooth": "{volume}% {icon} {format_source}",
-        "format-bluetooth-muted": " {icon} {format_source}",
-        "format-muted": " {format_source}",
+        "format-bluetooth-muted": "󰝟 {icon} {format_source}",
+        "format-muted": " {format_source}",
         "format-source": "{volume}% ",
         "format-source-muted": "",
         "format-icons": {
             "headphone": "",
             "hands-free": "",
-            "headset": "",
+            "headset": "󰋎",
             "phone": "",
             "portable": "",
             "car": "",
