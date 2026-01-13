@@ -90,7 +90,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.loaded_netrw = 1
 vim.g.loadedd_netrwPlugin = 1
-vim.g.maplocalleader = ' '
+vim.g.maplocalleader = '\\'
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
@@ -151,14 +151,13 @@ vim.o.splitright = true
 vim.o.splitbelow = true
 
 -- Spell check
-vim.opt.spell = true
+vim.opt.spell = false
 vim.opt.spelllang = { 'en', 'pl' }
 
 vim.keymap.set('n', '<leader>ts', function()
   vim.opt.spell = not (vim.opt.spell:get())
   print('Spellcheck: ' .. (vim.opt.spell:get() and 'On' or 'Off'))
 end, { desc = '[T]oggle [S]pellcheck' })
-
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
@@ -315,7 +314,177 @@ require('lazy').setup({
   --
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
+  -- LaTeX
+  {
+    'lervag/vimtex',
+    lazy = false,
+    init = function()
+      vim.g.vimtex_view_method = 'sioyek'
+      vim.g.vimtex_syntax_conceal = {
+        math_bounds = 0,
+      }
+    end,
+  },
+  -- Wyszukiwanie komend
+  {
+    'nvim-telescope/telescope.nvim',
+    tag = '0.1.8', -- Wersja stabilna
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      -- Silnik sortowania (szybki, napisany w C)
+      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      -- Rozszerzenie do podglądu snippetów!
+      'benfowler/telescope-luasnip.nvim',
+    },
+    config = function()
+      local telescope = require 'telescope'
+      local actions = require 'telescope.actions'
 
+      telescope.setup {
+        defaults = {
+          -- Klawiszologia wewnątrz okna Telescope
+          mappings = {
+            i = {
+              ['<C-k>'] = actions.move_selection_previous, -- Ruch w górę (zamiast strzałek)
+              ['<C-j>'] = actions.move_selection_next, -- Ruch w dół
+              ['<Esc>'] = actions.close, -- Szybkie wyjście Esc
+            },
+          },
+        },
+      }
+
+      -- Ładowanie rozszerzeń (WAŻNE!)
+      -- Jeśli instalacja fzf się nie udała (brak make/gcc), zakomentuj linię niżej
+      pcall(telescope.load_extension, 'fzf')
+      telescope.load_extension 'luasnip' -- To pozwala szukać snippetów
+
+      -- SKRÓTY KLAWISZOWE (Klucz do wygody)
+      local builtin = require 'telescope.builtin'
+
+      -- Spacja + ff = Znajdź plik (Find Files)
+      vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope: Pliki' })
+
+      -- Spacja + fg = Znajdź tekst w projekcie (Live Grep) - WYMAGA ripgrep
+      vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope: Tekst (Grep)' })
+
+      -- Spacja + fb = Znajdź otwarty bufor (zakładkę)
+      vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope: Bufory' })
+
+      -- Spacja + fs = Znajdź SNIPPET (to, o co pytałeś)
+      vim.keymap.set('n', '<leader>fs', function()
+        require('telescope').extensions.luasnip.luasnip {}
+      end, { desc = 'Telescope: Snippety' })
+    end,
+  },
+  -- Owijanie zaznaczonego tekstu
+  {
+    'kylechui/nvim-surround',
+    version = '*', -- Użyj najnowszej stabilnej wersji
+    event = 'VeryLazy',
+    config = function()
+      require('nvim-surround').setup {
+        surrounds = {
+          ['c'] = {
+            add = function()
+              local config = require 'nvim-surround.config'
+              local cmd = config.get_input 'LaTeX Command: '
+              if cmd then
+                return { { '\\' .. cmd .. '{' }, { '}' } }
+              end
+            end,
+          },
+        },
+      }
+    end,
+  },
+  -- Użycie: Zaznaczyć v. Shift + s, $, (, {, f (funkcja)
+
+  -- Silnik snippetów (Mózg operacji)
+  {
+    'L3MON4D3/LuaSnip',
+    version = 'v2.*',
+    build = 'make install_jsregexp',
+    dependencies = { 'rafamadriz/friendly-snippets' }, -- Gotowa baza (LaTeX, Python, C++...)
+  },
+
+  -- Połączenie silnika z menu podpowiadania (Klej)
+  { 'saadparwaiz1/cmp_luasnip' },
+
+  -- Konfiguracja nvim-cmp (żeby wiedział o snippetach)
+  {
+    'hrsh7th/nvim-cmp',
+    dependencies = {
+      'hrsh7th/cmp-nvim-lsp',
+      'hrsh7th/cmp-buffer',
+      'hrsh7th/cmp-path',
+      'saadparwaiz1/cmp_luasnip',
+      'L3MON4D3/LuaSnip',
+      'kdheepak/cmp-latex-symbols',
+    },
+    opts = function(_, opts)
+      local cmp = require 'cmp'
+      local luasnip = require 'luasnip'
+
+      -- Funkcja pomocnicza: sprawdza, czy przed kursorem są litery
+      -- (żeby Tab nie otwierał menu na początku pustej linii)
+      local has_words_before = function()
+        unpack = unpack or table.unpack
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+        return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match '%s' == nil
+      end
+
+      -- Ładowanie gotowych snippetów (VS Code style)
+      require('luasnip.loaders.from_vscode').lazy_load()
+
+      opts.snippet = {
+        expand = function(args)
+          luasnip.lsp_expand(args.body)
+        end,
+      }
+      opts.sources = cmp.config.sources {
+        { name = 'luasnip' },
+        { name = 'nvim_lsp' },
+        { name = 'latex_symbols', option = { strategy = 0 } }, -- NOWE: To wyświetla symbole!
+        { name = 'path' },
+      }
+      opts.formatting = {
+        format = function(entry, vim_item)
+          -- Dodaje informację skąd pochodzi podpowiedź
+          vim_item.menu = ({
+            nvim_lsp = '[LSP]',
+            luasnip = '[Snippet]',
+            latex_symbols = '[Symbol]',
+          })[entry.source.name]
+          return vim_item
+        end,
+      }
+      opts.mapping = vim.tbl_extend('force', opts.mapping or {}, {
+        -- LOGIKA SUPER TABA:
+        ['<Tab>'] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+          elseif luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+          else
+            fallback() -- To jest klucz! Wywołuje domyślne zachowanie (wcięcie)
+          end
+        end, { 'i', 's' }),
+        -- Shift + Tab (Cofanie)
+        ['<S-Tab>'] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_prev_item()
+          elseif luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          else
+            fallback()
+          end
+        end, { 'i', 's' }),
+
+        -- Enter zatwierdza wybór
+        ['<CR>'] = cmp.mapping.confirm { select = true },
+      })
+    end,
+  },
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
@@ -454,6 +623,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      -- LaTeX
+      vim.g.maplocalleader = '\\'
+      vim.keymap.set('n', ',', ':Neotree toggle<CR>', { desc = 'Toggle Neo-tree' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -1064,6 +1236,16 @@ local groups = {
   'LineNr',
   'SignColumn', -- Pasek z numerami linii
 }
+
+-- Awaryjne mapowanie Telescope (wklej na końcu init.lua)
+local builtin = require 'telescope.builtin'
+vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Szukaj plików' })
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Szukaj tekstu' })
+vim.keymap.set('n', '<leader>fs', function()
+  require('telescope').extensions.luasnip.luasnip {}
+end, { desc = 'Szukaj Snippetów' })
+
+pcall(vim.keymap.del, 'n', '\\')
 
 for _, group in ipairs(groups) do
   set_transparent(group)

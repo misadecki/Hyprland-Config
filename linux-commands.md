@@ -2,7 +2,7 @@
 #WiFi list
     nmcli device wifi
 #Connect to WiFi
-    nmcli device wifi connect [network-name] password [password]
+    nmcli --ask device wifi connect "[Nazwa]"
 #Disconnect
     nmcli connection delete "[Wifi-Name]"
 #missing property?

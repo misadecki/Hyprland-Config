@@ -40,13 +40,15 @@ bindkey -e              # Standardowe skróty Emacs (Ctrl+A, Ctrl+E itp.)
 bindkey '^[[A' up-line-or-search   # Strzałka w górę szuka w historii
 bindkey '^[[B' down-line-or-search # Strzałka w dół szuka w historii
 # Akceptuj podpowiedź kombinacją Ctrl+Spacja
-bindkey '^ ' autosuggest-accept
+# bindkey '^ ' autosuggest-accept
+#Autosuggest accept second bind: Ctrl+UpArrow
+bindkey '^[[1;5A' autosuggest-accept
 eval "$(starship init zsh)"
 eval "$(dircolors ~/.dircolors)"
 
 #6. Aliasy
 alias ls='ls --color=auto'
-
+alias cclear='wl-copy --clear && wl-copy --primary --clear && cliphist wipe'
 
 # ==========================================
 # Konfiguracja FZF-TAB
@@ -105,3 +107,6 @@ bindkey '^[[F' end-of-line
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '^e' edit-command-line
+
+#Directories shortcuts
+hash -d v="/home/cardaver/Work/V_semester"
