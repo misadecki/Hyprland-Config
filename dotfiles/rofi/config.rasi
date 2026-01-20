@@ -1,0 +1,106 @@
+configuration {
+    font:                           "JetBrainsMono Nerd Font 12";
+    show-icons:                     false;
+    icon-theme: 		    "Arc-X-D";
+    scroll-method:                  0;
+    disable-history:                false;
+    sidebar-mode: 		    false;
+    display-drun: " ";
+    display-run: " ";
+    modi: "drun,run";
+}
+
+* {
+    /* Ustawiamy zmienne kolorów */
+    
+    /* TEKST: Biały */
+    foreground:                     #ffffff;
+    
+    /* RAMKA i ZAZNACZENIE: Niebieski (możesz zmienić na inny) */
+    accent-color:                   #4084d6; 
+    
+    /* KLUCZOWE: Wszystkie tła domyślnie przezroczyste */
+    background-color:               transparent;
+    text-color:                     @foreground;
+}
+
+window {
+    /* TŁO OKNA: Transparent = brak wypełnienia w środku */
+    background-color:               transparent;
+    
+    /* RAMKA (OBWÓDKA) */
+    border:                         2px;            /* Grubość ramki */
+    border-color:                   @accent-color;  /* Kolor ramki */
+    border-radius:                  10px;           /* Zaokrąglone rogi ramki */
+    
+    padding:                        10;
+    transparency:                   "real";
+    width:                          350px;
+    location:                       east;
+    x-offset: -15px;
+}
+
+listview {
+    lines:                          6;
+    columns:                        1;
+    scrollbar:			    false;
+}
+
+element {
+    border:  0;
+    padding: 1px;
+    /* Elementy listy też muszą być puste w środku */
+    background-color: transparent;
+}
+
+element-text {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
+/* --- ELEMENTY NIEZAZNACZONE (Czyste tło) --- */
+element.normal.normal, element.normal.urgent, element.normal.active,
+element.alternate.normal, element.alternate.urgent, element.alternate.active {
+    background-color: transparent;
+    text-color:       @foreground;
+}
+
+/* --- ELEMENT ZAZNACZONY --- */
+/* Tutaj decydujesz: czy zaznaczenie ma być pełnym paskiem, czy tylko zmianą koloru tekstu? */
+/* Obecnie: Pełny niebieski pasek */
+element.selected.normal, element.selected.urgent, element.selected.active {
+    background-color: @accent-color;
+    text-color:       #ffffff;
+    border-radius:    5px; /* Ładne zaokrąglenie paska zaznaczenia */
+}
+
+/* --- RESZTA (Suwaki, inputy - wszystko przezroczyste) --- */
+mode-switcher {
+    border:       2px 0px 0px ;
+    border-color: @accent-color;
+}
+
+button {
+    text-color: @foreground;
+}
+
+button.selected {
+    background-color: @accent-color;
+    text-color:       #ffffff;
+}
+
+inputbar {
+    text-color: @foreground;
+    padding:    1px ;
+    children:   [ prompt,textbox-prompt-colon,entry,case-indicator ];
+}
+
+case-indicator, entry, prompt, textbox-prompt-colon {
+    text-color: @foreground;
+}
+
+textbox-prompt-colon {
+    expand:     false;
+    str:        ":";
+    margin:     0px 0.3em 0em 0em ;
+}

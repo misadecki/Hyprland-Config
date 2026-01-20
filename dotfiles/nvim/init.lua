@@ -322,7 +322,62 @@ require('lazy').setup({
       vim.g.vimtex_view_method = 'sioyek'
       vim.g.vimtex_syntax_conceal = {
         math_bounds = 0,
+        greek = 1,
+        math_symbols = 1,
       }
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'tex',
+        callback = function()
+          vim.opt_local.conceallevel = 2
+        end,
+      })
+    end,
+  },
+  {
+    'nvim-neo-tree/neo-tree.nvim',
+    branch = 'v3.x',
+    lazy = false,
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-tree/nvim-web-devicons',
+      'MunifTanjim/nui.nvim',
+    },
+    -- 1. Globalny skrót (Działa gdy jesteś w pliku .tex)
+    keys = {
+      {
+        ',',
+        function()
+          -- Komenda :Neotree reveal focusuje plik w drzewie
+          vim.cmd 'Neotree reveal'
+        end,
+        desc = 'Neo-tree: Pokaż plik',
+      },
+    },
+    opts = {
+      window = {
+        position = 'left',
+        width = 30,
+        mapping_options = {
+          noremap = true,
+          nowait = true,
+        },
+        mappings = {
+          -- 2. Lokalny skrót (Działa TYLKO gdy jesteś wewnątrz Neo-tree)
+          -- Nadpisujemy przecinek, żeby wewnątrz drzewa służył do zamykania
+          [','] = 'close_window',
+
+          ['\\'] = 'none', -- Blokada backslasha
+          ['<space>'] = 'none',
+        },
+      },
+      filesystem = {
+        follow_current_file = { enabled = true },
+        use_libuv_file_watcher = true,
+      },
+    },
+    config = function(_, opts)
+      require('neo-tree').setup(opts)
+      vim.cmd 'Neotree show'
     end,
   },
   -- Wyszukiwanie komend
@@ -376,28 +431,39 @@ require('lazy').setup({
       end, { desc = 'Telescope: Snippety' })
     end,
   },
-  -- Owijanie zaznaczonego tekstu
+  -- Owijanie tekstu
   {
     'kylechui/nvim-surround',
-    version = '*', -- Użyj najnowszej stabilnej wersji
+    version = '*',
     event = 'VeryLazy',
-    config = function()
-      require('nvim-surround').setup {
-        surrounds = {
-          ['c'] = {
-            add = function()
-              local config = require 'nvim-surround.config'
-              local cmd = config.get_input 'LaTeX Command: '
-              if cmd then
-                return { { '\\' .. cmd .. '{' }, { '}' } }
-              end
-            end,
-          },
+    -- Zamiast 'config = function...', używamy 'opts'
+    opts = {
+      surrounds = {
+        -- Definiujemy klawisz 'l' (LaTeX Command)
+        ['l'] = {
+          add = function()
+            local config = require 'nvim-surround.config'
+            local cmd = config.get_input 'LaTeX Command: '
+            if cmd then
+              -- Zwraca: { { "\komenda{" }, { "}" } }
+              return { { '\\' .. cmd .. '{' }, { '}' } }
+            end
+          end,
         },
-      }
-    end,
+        -- Opcjonalnie: Naprawa klawisza 'f' (Function), żeby też używał klamer {} zamiast ()
+        ['f'] = {
+          add = function()
+            local config = require 'nvim-surround.config'
+            local cmd = config.get_input 'Function: '
+            if cmd then
+              return { { '\\' .. cmd .. '{' }, { '}' } }
+            end
+          end,
+        },
+      },
+    },
   },
-  -- Użycie: Zaznaczyć v. Shift + s, $, (, {, f (funkcja)
+  -- Użycie: Zaznaczyć v. Shift + s, $, (, {, l (funkcja)
 
   -- Silnik snippetów (Mózg operacji)
   {
@@ -409,7 +475,6 @@ require('lazy').setup({
 
   -- Połączenie silnika z menu podpowiadania (Klej)
   { 'saadparwaiz1/cmp_luasnip' },
-
   -- Konfiguracja nvim-cmp (żeby wiedział o snippetach)
   {
     'hrsh7th/nvim-cmp',
@@ -463,8 +528,6 @@ require('lazy').setup({
         ['<Tab>'] = cmp.mapping(function(fallback)
           if cmp.visible() then
             cmp.select_next_item()
-          elseif luasnip.expand_or_jumpable() then
-            luasnip.expand_or_jump()
           else
             fallback() -- To jest klucz! Wywołuje domyślne zachowanie (wcięcie)
           end
@@ -473,8 +536,6 @@ require('lazy').setup({
         ['<S-Tab>'] = cmp.mapping(function(fallback)
           if cmp.visible() then
             cmp.select_prev_item()
-          elseif luasnip.jumpable(-1) then
-            luasnip.jump(-1)
           else
             fallback()
           end
@@ -482,6 +543,23 @@ require('lazy').setup({
 
         -- Enter zatwierdza wybór
         ['<CR>'] = cmp.mapping.confirm { select = true },
+        -- 4. CTRL+L: SKOK DO PRZODU w snippecie (zamiast Taba)
+        ['<C-l>'] = cmp.mapping(function(fallback)
+          if luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+          else
+            fallback()
+          end
+        end, { 'i', 's' }),
+
+        -- 5. CTRL+H: SKOK W TYŁ w snippecie
+        ['<C-h>'] = cmp.mapping(function(fallback)
+          if luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          else
+            fallback()
+          end
+        end, { 'i', 's' }),
       })
     end,
   },
@@ -625,8 +703,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
       -- LaTeX
       vim.g.maplocalleader = '\\'
-      vim.keymap.set('n', ',', ':Neotree toggle<CR>', { desc = 'Toggle Neo-tree' })
-
+      --vim.keymap.set('n', ',', ':Neotree toggle<CR>', { desc = 'Toggle Neo-tree' })
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
@@ -1178,7 +1255,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
-  require 'kickstart.plugins.neo-tree',
+  -- require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
@@ -1212,10 +1289,151 @@ require('lazy').setup({
     },
   },
 })
+-- === AUTOMATYCZNE SNIPPETY LATEX (Label w jednej linii + Fold na końcu) ===
 
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function()
+    local has_ls, ls = pcall(require, 'luasnip')
+    if not has_ls then
+      return
+    end
+
+    local s = ls.snippet
+    local i = ls.insert_node
+    local f = ls.function_node
+    local rep = require('luasnip.extras').rep
+    local fmt = require('luasnip.extras.fmt').fmt
+
+    -- 1. FUNKCJA CZYSZCZĄCA
+    local function sanitize_label(args)
+      local text = args[1][1] or ''
+      text = text:lower()
+      local replacements = {
+        ['ą'] = 'a',
+        ['ć'] = 'c',
+        ['ę'] = 'e',
+        ['ł'] = 'l',
+        ['ń'] = 'n',
+        ['ó'] = 'o',
+        ['ś'] = 's',
+        ['ź'] = 'z',
+        ['ż'] = 'z',
+        ['Ą'] = 'a',
+        ['Ć'] = 'c',
+        ['Ę'] = 'e',
+        ['Ł'] = 'l',
+        ['Ń'] = 'n',
+        ['Ó'] = 'o',
+        ['Ś'] = 's',
+        ['Ź'] = 'z',
+        ['Ż'] = 'z',
+        [' '] = '_',
+        [','] = '',
+        ['%.'] = '',
+        [':'] = '',
+        ['%('] = '',
+        ['%)'] = '',
+        ['"'] = '',
+        ["'"] = '',
+      }
+      for k, v in pairs(replacements) do
+        text = text:gsub(k, v)
+      end
+      text = text:gsub('[^a-z0-9%-_]', '')
+      return text
+    end
+
+    -- 2. KONFIGURACJA NAGŁÓWKÓW (Sections)
+    -- Wynik: \section{Tytuł} \label{sec:tytul} % (fold)
+    local headings = {
+      { trig = 'part', cmd = 'part', lbl = 'part' },
+      { trig = 'cha', cmd = 'chapter', lbl = 'cha' },
+      { trig = 'sec', cmd = 'section', lbl = 'sec' },
+      { trig = 'sub', cmd = 'subsection', lbl = 'sub' },
+      { trig = 'ssub', cmd = 'subsubsection', lbl = 'ssub' },
+      { trig = 'par', cmd = 'paragraph', lbl = 'par' },
+    }
+
+    for _, val in ipairs(headings) do
+      ls.add_snippets('tex', {
+        s(
+          { trig = val.trig, dscr = 'Auto ' .. val.cmd .. ' fold inline', priority = 2000 },
+          fmt(
+            [[
+            \{}{{{}}} \label{{{}:{}}} % (fold)
+
+            {}
+            % {} {} (end)
+            ]],
+            {
+              f(function()
+                return val.cmd
+              end), -- 1. np. section
+              i(1, 'title'), -- 2. Tytuł
+              f(function()
+                return val.lbl
+              end), -- 3. Prefiks
+              f(sanitize_label, { 1 }), -- 4. Label z tytułu
+              i(0), -- 5. Kursor pod spodem
+              f(function()
+                return val.cmd
+              end), -- 6. Komentarz końcowy (typ)
+              rep(1), -- 7. Komentarz końcowy (powtórzony tytuł)
+            }
+          )
+        ),
+      })
+    end
+
+    -- 3. KONFIGURACJA ŚRODOWISK (Figures / Tables)
+    -- Wynik: \begin{figure} % (fold)
+    -- (Tutaj fold dajemy przy \begin, bo label jest głęboko w środku przy caption)
+    local floats = {
+      { trig = 'fig', env = 'figure', lbl = 'fig', content = '\\centering\n\t\\includegraphics[width=0.8\\linewidth]{filename}' },
+      { trig = 'tab', env = 'table', lbl = 'tab', content = '\\centering\n\t\\begin{tabular}{c c}\n\t\tA & B \\\\\n\t\\end{tabular}' },
+    }
+
+    for _, val in ipairs(floats) do
+      ls.add_snippets('tex', {
+        s(
+          { trig = val.trig, dscr = 'Auto ' .. val.env .. ' fold inline', priority = 2000 },
+          fmt(
+            [[
+            \begin{{{}}} % (fold)
+            	{}
+            	\caption{{{}}} \label{{{}:{}}}
+            \end{{{}}}
+            {}
+            % {} {} (end)
+            ]],
+            {
+              f(function()
+                return val.env
+              end),
+              i(1, val.content),
+              i(2, 'Desc'),
+              f(function()
+                return val.lbl
+              end),
+              f(sanitize_label, { 2 }),
+              f(function()
+                return val.env
+              end),
+              i(0),
+              f(function()
+                return val.env
+              end), -- Komentarz końcowy (typ)
+              rep(2), -- Komentarz końcowy (powtórzony opis)
+            }
+          )
+        ),
+      })
+    end
+  end,
+})
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
--- === WYMUSZENIE PRZEZROCZYSTOŚCI (Na samym końcu init.lua) ===
+-- === WYMUSZENIE PRZEZROCZYSTOŚCI ===
 local highlight_group = vim.api.nvim_set_hl
 
 -- Funkcja pomocnicza do usuwania tła
@@ -1244,7 +1462,6 @@ vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Szukaj tekstu' })
 vim.keymap.set('n', '<leader>fs', function()
   require('telescope').extensions.luasnip.luasnip {}
 end, { desc = 'Szukaj Snippetów' })
-
 pcall(vim.keymap.del, 'n', '\\')
 
 for _, group in ipairs(groups) do
