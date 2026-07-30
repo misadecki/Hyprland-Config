@@ -45,7 +45,14 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd(
 		"dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE"
 	)
+	hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+	hl.exec_cmd(
+		"sleep 1 && systemctl --user stop xdg-desktop-portal xdg-desktop-portal-hyprland xdg-desktop-portal-gtk"
+	)
+	hl.exec_cmd("sleep 1.5 && systemctl --user start xdg-desktop-portal-gtk xdg-desktop-portal-hyprland")
+
 	hl.exec_cmd(terminal)
+	hl.exec_cmd("~/.config/hypr/scripts/battery_daemon.sh")
 	hl.exec_cmd("pypr")
 	hl.exec_cmd("udiskie &")
 	hl.exec_cmd("awww-daemon")
@@ -71,6 +78,10 @@ end)
 
 hl.env("XCURSOR_SIZE", "16")
 hl.env("HYPRCURSOR_SIZE", "16")
+hl.env("GDK_BACKEND", "wayland,x11,*")
+hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
+hl.env("XDG_MENU_PREFIX", "arch-")
+hl.env("MOZ_ENABLE_WAYLAND", "1")
 
 -----------------------
 ----- PERMISSIONS -----
