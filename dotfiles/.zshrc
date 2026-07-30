@@ -27,13 +27,19 @@ SAVEHIST=10000
 setopt APPEND_HISTORY
 setopt SHARE_HISTORY
 
+#Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
+
 # 3. Znak zachęty (prosty, kolorowy prompt)
 # Możesz to zmienić później na powerlevel10k, jeśli chcesz "bajerów"
 PROMPT='%F{green}%n@%m%f %F{blue}%~%f $ '
 
 # 4. Ładowanie wtyczek (Kluczowe dla efektu Manjaro!)
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # 5. Skróty klawiszowe
 bindkey -e              # Standardowe skróty Emacs (Ctrl+A, Ctrl+E itp.)
@@ -49,6 +55,8 @@ eval "$(dircolors ~/.dircolors)"
 #6. Aliasy
 alias ls='ls --color=auto'
 alias cclear='wl-copy --clear && wl-copy --primary --clear && cliphist wipe'
+alias panamint='ssh msadecki@panamint.kcir.pwr.edu.pl'
+alias sd='sudo pacman -Syu; flatpak update && poweroff'
 
 # ==========================================
 # Konfiguracja FZF-TAB
@@ -109,4 +117,77 @@ zle -N edit-command-line
 bindkey '^e' edit-command-line
 
 #Directories shortcuts
-hash -d v="/home/cardaver/Work/V_semester"
+hash -d v="/home/cardaver/Work/VI_semester"
+export PICO_SDK_PATH=/home/cardaver/Pico/pico-sdk
+export EDITOR=nvim
+export VISUAL=nvim
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH=$HOME/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/15.2.1-1.1.1/.content/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
+alias get_idf='. $HOME/software/esp/esp-idf/export.sh'
+#Creates idf ESP project same as PlatformIO (need to use template at
+#.esp_template)
+function idf-new() {
+    local project_name=$1
+    local template_path="$HOME/.esp_template"
+
+    if [ -z "$project_name" ]; then
+        echo "Usage: idf-new project_name"
+        return 1
+    fi
+
+    if [ ! -d "$template_path" ]; then
+        echo "${RED}Error: Template $template_path does not exist!${NC}"
+        return 1
+    fi
+
+    cp -r "$template_path" "$project_name"
+    cd "$project_name"
+
+    # 2. Place project name in CMakeLists.txt
+    # (You need to have in CMakeLists.txt: project(project_name_placeholder))
+    sed -i "s/project_name_placeholder/$project_name/g" CMakeLists.txt
+
+    echo "Project $project_name created."
+
+    # 3. Nvim init 
+    if command -v idf.py &> /dev/null; then
+        echo "Generating files for LSP (clangd)..."
+        idf.py reconfigure
+        #Symlink for compile_commands.json
+        ln -sf build/compile_commands.json .
+        echo "${GREEN}Your project is ready.${NC}"
+    else
+        echo "${YELLOW}Problem occuried during creating project.${NC}"
+    fi
+}
+alias otchlan="cd /home/cardaver/software/otchlan && ./otchlan /cp5 && cd -"
+export PICO_SDK_PATH="$HOME/software/pico-sdk"
+
+if [ -f /etc/os-release ] && grep -q "Ubuntu" /etc/os-release; then
+    export STARSHIP_CONFIG="$HOME/.config/starship_ubuntu.toml"
+else
+    export STARSHIP_CONFIG="$HOME/.config/starship.toml"
+fi
+
+if command -v starship &> /dev/null; then
+    eval "$(starship init zsh)"
+fi
+
+if [ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+elif [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
+if [ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+elif [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+    source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
+
+alias u="distrobox enter ubuntu"
+alias us="distrobox stop ubuntu"
