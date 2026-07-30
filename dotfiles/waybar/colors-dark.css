@@ -1,0 +1,4 @@
+@define-color primary #96d8ff;
+@define-color background rgba(21, 18, 27, 0.8);
+@define-color battery-good #a8ff96;
+@define-color temp-critical #ff5874;

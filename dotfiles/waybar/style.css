@@ -1,5 +1,4 @@
-@define-color primary #96d8ff;
-@define-color background rgba(21, 18, 27, 0.8);
+@import "colors-current.css";
 
 /* All Modules */
 * {
@@ -52,7 +51,8 @@ menu menuitem:hover {
 #pulseaudio,
 #battery,
 #bluetooth,
-#network,
+/* #network, */
+#custom-wifi,
 #power-profiles-daemon,
 #cpu,
 #memory,
@@ -89,7 +89,7 @@ menu {
   border-radius: 10px;
 }
 #battery {
-  color: #a8ff96;
+  color: @battery-good;
   padding-right: 15px;
 }
 #power-profiles-daemon.performance { 
@@ -102,7 +102,7 @@ menu {
   color: #9a7eff; 
 }
 #temperature.critical {
-   color: #ff5874; 
+   color: @temp-critical; 
 }
 #clock {
   margin-right: 5px;

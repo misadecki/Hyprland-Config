@@ -95,10 +95,37 @@ vim.g.maplocalleader = '\\'
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
+-- Text width
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = '*',
+  callback = function()
+    vim.opt_local.textwidth = 80 -- Twarda granica 80 znaków
+    vim.opt_local.formatoptions:remove 'l'
+    vim.opt_local.formatoptions:append 't' -- Włącz auto-wrap tekstu
+    vim.opt_local.formatoptions:append 'c' -- zawijanie komentarzy
+    vim.opt_local.formatoptions:append 'r'
+    vim.opt_local.wrapmargin = 0 -- Margines na 0
+    vim.opt_local.linebreak = true -- Zawijaj całe słowa (nie tnij ich w połowie)
+  end,
+})
+
+vim.api.nvim_create_autocmd('ColorScheme', {
+  pattern = '*',
+  callback = function()
+    vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
+    vim.api.nvim_set_hl(0, 'NormalNC', { bg = 'none' })
+    vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'none' })
+    -- Jeśli używasz paska NvimTree lub Neo-tree i on też traci przezroczystość:
+    vim.api.nvim_set_hl(0, 'NvimTreeNormal', { bg = 'none' })
+    vim.api.nvim_set_hl(0, 'NeoTreeNormal', { bg = 'none' })
+    vim.api.nvim_set_hl(0, 'NeoTreeNormalNC', { bg = 'none' })
+  end,
+})
+
 -- Tab options
-vim.o.tabstop = 4
-vim.o.softtabstop = 4
-vim.o.shiftwidth = 4
+vim.o.tabstop = 2
+vim.o.softtabstop = 2
+vim.o.shiftwidth = 2
 vim.o.expandtab = true
 vim.o.smartindent = true
 vim.o.autoindent = true
@@ -145,6 +172,10 @@ vim.o.updatetime = 250
 
 -- Decrease mapped sequence wait time
 vim.o.timeoutlen = 300
+
+-- Makro do przesuwania gora-dol
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move selected Down 1' })
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move selected Up 1' })
 
 -- Configure how new splits should be opened
 vim.o.splitright = true
@@ -300,7 +331,80 @@ require('lazy').setup({
       },
     },
   },
+  -- CMake
+  {
+    'Civitasv/cmake-tools.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    cmd = { 'CMakeOpen', 'CMakeBuild', 'CMakeRun' },
+    config = function()
+      require('cmake-tools').setup {
+        cmake_executable = 'cmake', -- ścieżka do cmake w systemie
+        cmake_build_directory = 'build', -- katalog build w projekcie
+      }
+    end,
+  },
+  --Doxygen
 
+  {
+    'danymat/neogen',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+
+    keys = {
+      {
+        '<leader>nc',
+        function()
+          require('neogen').generate { type = 'func' }
+        end,
+        desc = 'Doxygen: Function',
+      },
+      {
+        '<leader>nf',
+        function()
+          local filename = vim.fn.expand '%:t'
+          local date = os.date '%Y-%m-%d'
+          local year = os.date '%Y'
+
+          -- local author = vim.fn.system('git config user.name'):gsub('\n', '')
+          local author = 'Michał Sadecki'
+          local email = vim.fn.system('git config user.email'):gsub('\n', '')
+
+          local header = {
+            '/**',
+            ' * @file ' .. filename,
+            ' * @author ' .. author .. ' (' .. email .. ')',
+            ' * @brief ',
+            ' * @version 0.1',
+            ' * @date ' .. date,
+            ' *',
+            ' * @copyright Copyright (c) ' .. year .. ' ' .. author,
+            ' */',
+            '',
+          }
+
+          vim.api.nvim_buf_set_lines(0, 0, 0, false, header)
+        end,
+        desc = 'Doxygen: File header',
+      },
+    },
+
+    config = function()
+      require('neogen').setup {
+        snippet_engine = 'luasnip',
+        languages = {
+          c = {
+            template = {
+              annotation_convention = 'doxygen',
+            },
+          },
+          cpp = {
+            template = {
+              annotation_convention = 'doxygen',
+            },
+          },
+        },
+      }
+    end,
+  },
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -314,12 +418,22 @@ require('lazy').setup({
   --
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
+  -- Lazygit
+  {
+    'kdheepak/lazygit.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    keys = {
+      { '<leader>gg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+    },
+  },
   -- LaTeX
   {
     'lervag/vimtex',
     lazy = false,
     init = function()
-      vim.g.vimtex_view_method = 'sioyek'
+      vim.g.vimtex_view_method = 'zathura'
       vim.g.vimtex_syntax_conceal = {
         math_bounds = 0,
         greek = 1,
@@ -947,8 +1061,25 @@ require('lazy').setup({
             '--header-insertion=never',
           },
         },
-
-        basedpyright = {},
+        basedpyright = {
+          settings = {
+            basedpyright = {
+              analysis = {
+                typeCheckingMode = 'standard',
+                diagnosticSeverityOverrides = {
+                  reportAny = 'none',
+                  reportUnknownArgumentType = 'none',
+                  reportUnknownVariableType = 'none',
+                  reportUnknownReturnType = 'none',
+                  reportUnknownParameterType = 'none',
+                  reportUnknownMemberType = 'none',
+                  reportMissingTypeArgument = 'none',
+                  reportUnknownLambdaType = 'none',
+                },
+              },
+            },
+          },
+        },
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -969,6 +1100,9 @@ require('lazy').setup({
             Lua = {
               completion = {
                 callSnippet = 'Replace',
+              },
+              diagnostics = {
+                globals = { 'hl' },
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
               -- diagnostics = { disable = { 'missing-fields' } },
@@ -1222,7 +1356,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'comment', 'cmake', 'cpp', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1431,6 +1565,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
   end,
 })
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 -- === WYMUSZENIE PRZEZROCZYSTOŚCI ===
@@ -1467,3 +1602,100 @@ pcall(vim.keymap.del, 'n', '\\')
 for _, group in ipairs(groups) do
   set_transparent(group)
 end
+
+local ls = require 'luasnip'
+local s = ls.snippet
+local t = ls.text_node
+local i = ls.insert_node
+
+local author = vim.fn.system('git config user.name'):gsub('\n', '')
+local email = vim.fn.system('git config user.email'):gsub('\n', '')
+
+vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
+  pattern = { '*.c', '*.cpp', '*.h', '*.hpp', '*.lua' },
+  callback = function()
+    vim.fn.matchadd('DiagnosticInfo', [[@\w\+]])
+    vim.fn.matchadd('DiagnosticWarn', [=[\[in\]]=]) -- na żółto/pomarańczowo
+    vim.fn.matchadd('DiagnosticOk', [=[\[out\]]=]) -- na zielono
+    vim.fn.matchadd('DiagnosticInfo', [=[\[in,out\]]=]) -- na niebiesko
+  end,
+})
+-- vim.lsp.config.clangd = {
+--   cmd = {
+--     'clangd',
+--     '--background-index',
+--     '--clang-tidy',
+--     -- Musisz podać pełną ścieżkę (bez tyldy ~)
+--     '--query-driver=/home/cardaver/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-gcc',
+--   },
+-- }
+--
+-- -- Włączamy clangd
+-- vim.lsp.enable 'clangd'
+-- Nowy sposób definiowania konfiguracji w Neovim 0.11+
+-- vim.lsp.config('clangd', {
+--   cmd = {
+--     'clangd',
+--     '--background-index',
+--     '--clang-tidy',
+--     -- Twoja wywalczona ścieżka do kompilatora:
+--     '--query-driver=/home/cardaver/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-gcc',
+--   },
+--   -- To zastępuje root_dir z lspconfig
+--   root_dir = vim.fs.root(0, { 'platformio.ini', '.clangd', '.git' }),
+-- })
+--
+-- -- Włączenie serwera dla bieżącego projektu
+-- vim.lsp.enable 'clangd'
+-- -- Automatyczne odświeżanie bazy LSP po zapisie platformio.ini
+-- vim.api.nvim_create_autocmd('BufWritePost', {
+--   pattern = 'platformio.ini',
+--   callback = function()
+--     print 'Odświeżam bazę danych PlatformIO...'
+--     vim.fn.jobstart('pio run -t compiledb', {
+--       on_exit = function()
+--         print 'Baza danych zaktualizowana. Restartuję LSP...'
+--         vim.cmd 'LspRestart'
+--       end,
+--     })
+--   end,
+-- })
+vim.lsp.config('clangd', {
+  cmd = {
+    'clangd',
+    '--background-index',
+    -- To jest KLUCZOWE dla ESP32 na Archu:
+    '--query-driver=**/*esp32*',
+    '--clang-tidy',
+    '--header-insertion=never',
+  },
+  -- Tutaj możesz dodać inne opcje, np. root_dir
+  root_dir = vim.fs.root(0, { 'compile_commands.json', '.git' }),
+})
+
+vim.lsp.enable 'vtsls'
+
+-- Aktywujemy clangd
+vim.lsp.enable 'clangd'
+
+vim.lsp.config('basedpyright', {
+  settings = {
+    basedpyright = {
+      analysis = {
+        typeCheckingMode = 'standard',
+        diagnosticSeverityOverrides = {
+          reportAny = 'none',
+          reportUnknownArgumentType = 'none',
+          reportUnknownVariableType = 'none',
+          reportUnknownReturnType = 'none',
+          reportUnknownParameterType = 'none',
+          reportUnknownMemberType = 'none',
+          reportUnknownLambdaType = 'none',
+          reportMissingTypeArgument = 'none',
+        },
+      },
+    },
+  },
+})
+
+vim.lsp.enable 'basedpyright'

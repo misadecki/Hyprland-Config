@@ -16,7 +16,8 @@
         "custom/weather",
         "pulseaudio",
         "backlight",
-        "network",
+        // "network",
+        "custom/wifi",
         "power-profiles-daemon",
         "temperature",
         //"keyboard-state",
@@ -111,13 +112,21 @@
         }
     },
 
-    "network": {
-        "format-wifi": "{signalStrength}% ",
-        "format-ethernet": "Connected 󰈁",
-        "tooltip-format": "{ifname} via {gwaddr} ",
-        "format-linked": "{ifname} (No IP) 󰈂",
-        "format-disconnected": "Disconnected ⚠",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}",
+    "custom/wifi": {
+    // "network": {
+        // "format-wifi": "{signalStrength}% ",
+        // "format-ethernet": "Connected 󰈁",
+        // "tooltip-format": "{ifname} via {gwaddr} ",
+        // "format-linked": "{ifname} (No IP) 󰈂",
+        // "format-disconnected": "Disconnected ⚠",
+        // "format-alt": "{ifname}: {ipaddr}/{cidr}",
+        // "on-click-right": "nm-connection-editor",
+        "format": "{}",
+        "exec": "~/.config/waybar/scripts/wifi_toggle.sh",
+        "return-type": "json",
+        "interval": 5, // Odświeżaj dane co 5 sekund
+        "on-click": "~/.config/waybar/scripts/wifi_toggle.sh toggle",
+        "signal": 9,
         "on-click-right": "nm-connection-editor"
     },
 
@@ -245,12 +254,13 @@
         "format": "{icon} Menu",
         "format-icons": [""],
         "tooltip": "Open Menu",
-        "on-click": "wofi --show drun --style ~/.config/wofi/menu.css",
+        //"on-click": "wofi --show drun --style ~/.config/wofi/menu.css",
+        "on-click": "rofi -show drun",
         "menu": "on-click-right",
         "menu-file": "$HOME/.config/waybar/options_menu.xml",
         "menu-actions": {
             "keybinds": "~/.config/waybar/scripts/keybinds.py",
-            "drun": "wofi --show drun --style ~/.config/wofi/menu.css",
+            "drun": "rofi -show drun --style ~/.config/wofi/menu.css",
             "open_keybinds": "kitty nvim ~/.config/hypr/sources/keybindings.conf",
             "snapshot": "$HOME/.config/waybar/scripts/snapshot.sh"
         }
@@ -259,7 +269,8 @@
     "custom/clipboard": {
         "format": "󰅌",
         "tooltip": false,
-        "on-click": "cliphist list | wofi --dmenu | cliphist decode | wl-copy"
+        "on-click": "cliphist list | rofi -dmenu -p 'Clipboard' -theme-str 'window {width: 60%; height: 60%;} listview {lines:15;}' | cliphist decode | wl-copy"
+       // "on-click": "~/.config/waybar/scripts/clipboard.sh"
     }
 }
 

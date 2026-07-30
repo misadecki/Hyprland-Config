@@ -1,0 +1,130 @@
+# Nie dodawaj pustej linii na samym początku
+add_newline = false
+
+# --- GŁÓWNA KONFIGURACJA FORMATU I KOLORÓW ---
+# Logika gradientu:
+# 1. Logo (Białe tło)
+# 2. User (Niebieskie tło)
+# 3. Folder (Białe tło)
+# 4. Git (Jasny Błękit #c0e4f2) -> Przejście z Bieli
+# 5. Grupa Języków 1 (Średni Błękit #86BBD8)
+# 6. Grupa Języków 2 + Docker (Ciemny Turkus #06969A)
+
+format = """
+[  ](bg:#ffffff fg:#1793d1 bold)\
+[](bg:#1793d1 fg:#ffffff)\
+$username\
+[](bg:#ffffff fg:#1793d1)\
+$directory\
+[](fg:#ffffff bg:#c0e4f2)\
+$git_branch\
+$git_status\
+[](fg:#c0e4f2 bg:#86BBD8)\
+$c\
+$elixir\
+$elm\
+$golang\
+$haskell\
+[](fg:#86BBD8 bg:#06969A)\
+$java\
+$julia\
+$nodejs\
+$nim\
+$rust\
+$docker_context\
+[ ](fg:#06969A)\
+"""
+
+# --- KONFIGURACJA MODUŁÓW ---
+
+[username]
+show_always = true
+# Dodano 'bold' do stylu usera
+style_user = "bg:#1793d1 fg:#ffffff bold"
+style_root = "bg:#1793d1 fg:#ff0000 bold"
+format = '[ $user ]($style)'
+
+[directory]
+# Dodano 'bold' do stylu folderu
+style = "bg:#ffffff fg:#1793d1 bold"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "📄 "
+"Downloads" = "📥 "
+"Music" = "🎜 "
+"Pictures" = "📷 "
+
+# --- GRUPA 1: GIT (JASNY BŁĘKIT #c0e4f2) ---
+
+[git_branch]
+symbol = "☊"
+style = "bg:#c0e4f2 fg:#000000 bold"
+# Dodano 'bold' wewnątrz formatu
+format = '[[ $symbol $branch ](bg:#c0e4f2 fg:#000000 bold)]($style)'
+
+[git_status]
+style = "bg:#c0e4f2 fg:#000000 bold"
+format = '[[($all_status$ahead_behind )](bg:#c0e4f2 fg:#000000 bold)]($style)'
+
+# --- GRUPA 2: JĘZYKI CZ. 1 (ŚREDNI BŁĘKIT #86BBD8) ---
+# Wszędzie poniżej dodano 'bold' w sekcji format
+
+[c]
+symbol = "© "
+style = "bg:#86BBD8"
+format = '[[ $symbol ($version) ](bg:#86BBD8 bold)]($style)'
+
+[elixir]
+symbol = "💧 "
+style = "bg:#86BBD8"
+format = '[[ $symbol ($version) ](bg:#86BBD8 bold)]($style)'
+
+[elm]
+symbol = "🌳 "
+style = "bg:#86BBD8"
+format = '[[ $symbol ($version) ](bg:#86BBD8 bold)]($style)'
+
+[golang]
+symbol = "🐹 "
+style = "bg:#86BBD8"
+format = '[[ $symbol ($version) ](bg:#86BBD8 bold)]($style)'
+
+[haskell]
+symbol = "λ "
+style = "bg:#86BBD8"
+format = '[[ $symbol ($version) ](bg:#86BBD8 bold)]($style)'
+
+# --- GRUPA 3: JĘZYKI CZ. 2 + DOCKER (CIEMNY TURKUS #06969A) ---
+
+[java]
+symbol = "☕ "
+style = "bg:#06969A"
+format = '[[ $symbol ($version) ](bg:#06969A bold)]($style)'
+
+[julia]
+symbol = "ஃ "
+style = "bg:#06969A"
+format = '[[ $symbol ($version) ](bg:#06969A bold)]($style)'
+
+[nodejs]
+symbol = "🔷 "
+style = "bg:#06969A"
+format = '[[ $symbol ($version) ](bg:#06969A bold)]($style)'
+
+[nim]
+symbol = "👑 "
+style = "bg:#06969A"
+format = '[[ $symbol ($version) ](bg:#06969A bold)]($style)'
+
+[rust]
+symbol = "🦀"
+style = "bg:#06969A"
+format = '[[ $symbol ($version) ](bg:#06969A bold)]($style)'
+
+[docker_context]
+symbol = "🐳 "
+style = "bg:#06969A"
+format = '[[ $symbol $context ](bg:#06969A bold)]($style) $path'

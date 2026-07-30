@@ -1,0 +1,78 @@
+# Nie dodawaj pustej linii na samym początku
+add_newline = false
+
+# --- GŁÓWNA KONFIGURACJA FORMATU (BIEL -> POMARAŃCZ -> GRADACJA) ---
+# 1. Logo:      Biel (#FFFFFF)
+# 2. Username:  Pomarańczowy (#E95420)
+# 3. Directory: Biel (#FFFFFF)
+# 4. Git:       Jasny Pomarańcz (#FFB380)
+# 5. Narzędzia: Ciemniejszy Pomarańcz (#FF7315)
+# 6. Koniec:    Jeszcze Ciemniejszy Pomarańcz (#B83B0F)
+format = """
+[  ](bg:#FFFFFF fg:#E95420 bold)\
+[](bg:#E95420 fg:#FFFFFF)\
+$username\
+[](bg:#FFFFFF fg:#E95420)\
+$directory\
+[](fg:#FFFFFF bg:#FFB380)\
+$git_branch\
+$git_status\
+[](fg:#FFB380 bg:#FF7315)\
+$c$golang$rust$nodejs$docker_context\
+[](fg:#FF7315 bg:#B83B0F)\
+[ ](fg:#B83B0F)\
+"""
+
+#[  ](bg:#B83B0F fg:#FFFFFF)\
+[username]
+show_always = true
+style_user = "bg:#E95420 fg:#FFFFFF bold"
+format = '[ $user ]($style)'
+
+[directory]
+style = "bg:#FFFFFF fg:#E95420 bold"
+format = "[ $path ]($style)"
+truncation_length = 3
+
+# --- KONFIGURACJA GIT ---
+[git_branch]
+symbol = ""
+style = "bg:#FFB380 fg:#333333 bold" # Ciemny tekst dla czytelności na jasnym tle
+format = '[[ $symbol $branch ]($style)]($style)'
+
+[git_status]
+style = "bg:#FFB380 fg:#333333 bold"
+conflicted = "[=](bg:#FFB380 fg:#CC0000 bold)"
+ahead = "[⇡](bg:#FFB380 fg:#0044CC bold)"
+behind = "[⇣](bg:#FFB380 fg:#0044CC bold)"
+untracked = "[?](bg:#FFB380 fg:#8A6D00 bold)"
+modified = "[!](bg:#FFB380 fg:#D35400 bold)"
+staged = "[+](bg:#FFB380 fg:#006622 bold)"
+deleted = "[✘](bg:#FFB380 fg:#CC0000 bold)"
+format = '[([$all_status$ahead_behind]($style))]($style)'
+
+# --- JĘZYKI I NARZĘDZIA ---
+[c]
+symbol = " "
+style = "bg:#FF7315 fg:#FFFFFF bold"
+format = '[ $symbol ]($style)'
+
+[golang]
+symbol = "Hamster "
+style = "bg:#FF7315 fg:#FFFFFF bold"
+format = '[ $symbol]($style)'
+
+[rust]
+symbol = "Crab "
+style = "bg:#FF7315 fg:#FFFFFF bold"
+format = '[ $symbol]($style)'
+
+[nodejs]
+symbol = "Node "
+style = "bg:#FF7315 fg:#FFFFFF bold"
+format = '[ $symbol ]($style)'
+
+[docker_context]
+symbol = "🐳 "
+style = "bg:#FF7315 fg:#FFFFFF bold"
+format = '[ $symbol$context ]($style)'

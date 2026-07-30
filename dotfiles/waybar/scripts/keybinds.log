@@ -1,0 +1,26 @@
+2026-06-27 14:09:15,980 - keybinds - INFO - Logging initialized
+2026-06-27 14:09:15,981 - keybinds - INFO - Loading favorites from /home/cardaver/.config/waybar/keybinds_favorites.json
+2026-06-27 14:09:15,981 - keybinds - INFO - Loaded 0 favorites
+2026-06-27 14:09:16,079 - keybinds - INFO - Setting up UI components
+2026-06-27 14:09:16,132 - keybinds - INFO - UI setup completed successfully
+2026-06-27 14:09:16,133 - keybinds - INFO - Executing hyprctl binds command
+2026-06-27 14:09:16,143 - keybinds - INFO - Parsing hyprctl output
+2026-06-27 14:09:16,144 - keybinds - ERROR - No valid keybinds found after parsing
+2026-06-27 14:09:16,144 - keybinds - ERROR - Error parsing keybinds: No valid keybinds found in Hyprland configuration.
+Traceback (most recent call last):
+  File "/home/cardaver/.config/waybar/scripts/keybinds.py", line 205, in parse_hyprctl_binds
+    raise ValueError("No valid keybinds found in Hyprland configuration.")
+ValueError: No valid keybinds found in Hyprland configuration.
+2026-06-27 14:09:45,866 - keybinds - INFO - Logging initialized
+2026-06-27 14:09:45,866 - keybinds - INFO - Loading favorites from /home/cardaver/.config/waybar/keybinds_favorites.json
+2026-06-27 14:09:45,866 - keybinds - INFO - Loaded 0 favorites
+2026-06-27 14:09:45,937 - keybinds - INFO - Setting up UI components
+2026-06-27 14:09:45,979 - keybinds - INFO - UI setup completed successfully
+2026-06-27 14:09:45,979 - keybinds - INFO - Executing hyprctl binds command
+2026-06-27 14:09:45,986 - keybinds - INFO - Parsing hyprctl output
+2026-06-27 14:09:45,987 - keybinds - ERROR - No valid keybinds found after parsing
+2026-06-27 14:09:45,987 - keybinds - ERROR - Error parsing keybinds: No valid keybinds found in Hyprland configuration.
+Traceback (most recent call last):
+  File "/home/cardaver/.config/waybar/scripts/keybinds.py", line 205, in parse_hyprctl_binds
+    raise ValueError("No valid keybinds found in Hyprland configuration.")
+ValueError: No valid keybinds found in Hyprland configuration.

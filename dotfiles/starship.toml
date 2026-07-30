@@ -31,7 +31,7 @@ truncation_length = 3
 # --- KONFIGURACJA GIT (EFEKT MANJARO) ---
 
 [git_branch]
-symbol = "☊"
+symbol = ""
 style = "bg:#c0e4f2 fg:#000000 bold"
 # Jeśli są zmiany, kolor tekstu brancha zmieni się na bordowy/czerwony
 # To najstabilniejsza metoda w Starship bez zewnętrznych skryptów
@@ -54,24 +54,24 @@ format = '[([$all_status$ahead_behind]($style))]($style)'
 # --- JĘZYKI I NARZĘDZIA ---
 
 [c]
-symbol = "© "
+symbol = " "
 style = "bg:#86BBD8 fg:#000000 bold"
-format = '[ $symbol($version) ]($style)'
+format = '[ $symbol ]($style)'
 
 [golang]
 symbol = "Hamster "
 style = "bg:#86BBD8 fg:#000000 bold"
-format = '[ $symbol($version) ]($style)'
+format = '[ $symbol]($style)'
 
 [rust]
 symbol = "Crab "
 style = "bg:#06969A fg:#ffffff bold"
-format = '[ $symbol($version) ]($style)'
+format = '[ $symbol]($style)'
 
 [nodejs]
 symbol = "Node "
 style = "bg:#06969A fg:#ffffff bold"
-format = '[ $symbol($version) ]($style)'
+format = '[ $symbol ]($style)'
 
 [docker_context]
 symbol = "🐳 "

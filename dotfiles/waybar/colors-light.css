@@ -1,0 +1,4 @@
+@define-color primary #005a9c; /* Ciemniejszy akcent dla jasnego tła */
+@define-color background rgba(240, 240, 240, 0.8); /* Jasne tło */
+@define-color battery-good #008a00;
+@define-color temp-critical #cc0000;

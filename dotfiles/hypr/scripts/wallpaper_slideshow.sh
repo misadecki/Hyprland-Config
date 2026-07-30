@@ -8,5 +8,9 @@ while true; do
     sleep $INTERVAL &
     wait $!
     WALLPAPER=$(find "$DIR" -type f | shuf -n 1)
-    swww img "$WALLPAPER" --transition-type wipe --transition-fps 60
+    awww img "$WALLPAPER" \
+    --transition-type wipe \
+    --transition-angle 30 \
+    --transition-duration 2 \
+    --transition-fps 60
 done
