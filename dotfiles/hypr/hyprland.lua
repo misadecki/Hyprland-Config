@@ -66,6 +66,7 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("waybar")
 	hl.exec_cmd("sleep 3 && hyprctl reload")
 	hl.exec_cmd("systemctl --user start opentabletdriver.service")
+	hl.exec_cmd("hyprshade on ~/.config/hypr/shaders/vibrance.glsl")
 	-- hl.exec_cmd("nm-applet")
 	-- hl.exec_cmd("waybar & hyprpaper & firefox")
 end)
@@ -294,7 +295,7 @@ hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit")) -- dwindle only
 
 hl.bind(mainMod .. " + F11", hl.dsp.window.fullscreen(1))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
--- hl.bind("Print", hl.dsp.exec_cmd("~/.config/waybar/scripts/snapshot.sh"))
+hl.bind("Print", hl.dsp.exec_cmd("~/.config/waybar/scripts/snapshot.sh"))
 hl.bind(
 	mainMod .. " + B",
 	hl.dsp.exec_cmd([[sh -c "cliphist list | 
@@ -306,6 +307,7 @@ hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("pkill -f -USR1 wallpaper_slideshow.s
 hl.bind(mainMod .. " + F12", hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle_theme.sh"))
 hl.bind(mainMod .. " + G", hl.dsp.exec_cmd("pypr toggle term"))
 hl.bind("SUPER + O", hl.dsp.window.pin())
+hl.bind(mainMod .. " + F9", hl.dsp.exec_cmd("hyprshade toggle ~/.config/hypr/shaders/vibrance.glsl"))
 
 -- Laptop's lid
 
@@ -446,6 +448,7 @@ hl.window_rule({
 	name = "vesktop-workspace",
 	match = { class = "vesktop" },
 	workspace = "3 silent",
+	opacity = "0.85",
 })
 
 hl.window_rule({
