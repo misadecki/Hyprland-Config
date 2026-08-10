@@ -194,3 +194,4 @@ alias us="distrobox stop ubuntu"
 
 # ZephyrOS environment
 alias zephyr-env='source ~/zephyrproject/.venv/bin/activate && source ~/zephyrproject/zephyr/zephyr-env.sh'
+alias bmp-flash='arm-none-eabi-gdb -nx --batch -ex "target extended-remote /dev/ttyACM0" -ex "monitor swdp_scan" -ex "attach 1" -ex "load" -ex "detach" build/zephyr/zephyr.elf'
