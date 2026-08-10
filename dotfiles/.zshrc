@@ -191,3 +191,6 @@ fi
 
 alias u="distrobox enter ubuntu"
 alias us="distrobox stop ubuntu"
+
+# ZephyrOS environment
+alias zephyr-env='source ~/zephyrproject/.venv/bin/activate && source ~/zephyrproject/zephyr/zephyr-env.sh'
