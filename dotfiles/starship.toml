@@ -12,7 +12,7 @@ $directory\
 $git_branch\
 $git_status\
 [](fg:#c0e4f2 bg:#86BBD8)\
-$c$elixir$elm$golang$haskell\
+$c$elixir$elm$golang$python$haskell\
 [](fg:#86BBD8 bg:#06969A)\
 $java$julia$nodejs$nim$rust$docker_context\
 [ ](fg:#06969A)\
@@ -77,3 +77,11 @@ format = '[ $symbol ]($style)'
 symbol = "🐳 "
 style = "bg:#06969A fg:#ffffff bold"
 format = '[ $symbol$context ]($style)'
+
+[python]
+symbol = "󰌠 "
+style = "bg:#86BBD8 fg:#000000 bold"
+format = '[ $symbol($virtualenv) ]($style)'
+detect_extensions = []
+detect_files = []
+detect_folders = []

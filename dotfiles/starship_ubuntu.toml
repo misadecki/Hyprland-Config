@@ -18,7 +18,7 @@ $directory\
 $git_branch\
 $git_status\
 [](fg:#FFB380 bg:#FF7315)\
-$c$golang$rust$nodejs$docker_context\
+$c$golang$python$rust$nodejs$docker_context\
 [](fg:#FF7315 bg:#B83B0F)\
 [ ](fg:#B83B0F)\
 """
@@ -76,3 +76,11 @@ format = '[ $symbol ]($style)'
 symbol = "🐳 "
 style = "bg:#FF7315 fg:#FFFFFF bold"
 format = '[ $symbol$context ]($style)'
+
+[python]
+symbol = "󰌠 "
+style = "bg:#86BBD8 fg:#000000 bold"
+format = '[ $symbol($virtualenv) ]($style)'
+detect_extensions = []
+detect_files = []
+detect_folders = []
