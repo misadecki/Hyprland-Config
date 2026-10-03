@@ -217,29 +217,8 @@ return {
             '--header-insertion=never',
           },
           root_dir = function(fname)
-            return
-            require('lspconfig.util').root_pattern('compile_commands.json',
-              'platformio.ini', '.git')(fname)
+            return require('lspconfig.util').root_pattern('compile_commands.json', 'platformio.ini', '.git')(fname)
           end,
-        },
-        basedpyright = {
-          settings = {
-            basedpyright = {
-              analysis = {
-                typeCheckingMode = 'standard',
-                diagnosticSeverityOverrides = {
-                  reportAny = 'none',
-                  reportUnknownArgumentType = 'none',
-                  reportUnknownVariableType = 'none',
-                  reportUnknownReturnType = 'none',
-                  reportUnknownParameterType = 'none',
-                  reportUnknownMemberType = 'none',
-                  reportMissingTypeArgument = 'none',
-                  reportUnknownLambdaType = 'none',
-                },
-              },
-            },
-          },
         },
         -- gopls = {},
         -- pyright = {},
@@ -306,5 +285,26 @@ return {
         },
       }
     end,
-  }
+  },
+  vim.lsp.config('basedpyright', {
+    settings = {
+      basedpyright = {
+        analysis = {
+          typeCheckingMode = 'basic',
+          autoSearchPaths = true,
+          useLibraryCodeForTypes = true,
+          diagnosticMode = 'openFilesOnly',
+          reportUnknownArgumentType = 'none',
+          reportUnknownVariableType = 'none',
+          reportUnknownReturnType = 'none',
+          reportUnknownParameterType = 'none',
+          reportUnknownMemberType = 'none',
+          reportMissingTypeArgument = 'none',
+          reportUnknownLambdaType = 'none',
+          reportMissingParameterType = 'none',
+          reportAny = 'none',
+        },
+      },
+    },
+  }),
 }
