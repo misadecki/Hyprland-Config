@@ -28,5 +28,5 @@ theme (and prepare it for my invert workflow). I hope to introduce more things t
 - Clipboard: wl-clipboard
 - Hand writing: xournalpp
 - Tablet: opentabletdriver
-- Screenshots: grim + swappy (I'm searching for something else)
+- Screenshots: flameshot
 - Additional terminal: pypr

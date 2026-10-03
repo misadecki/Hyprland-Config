@@ -301,7 +301,8 @@ hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit")) -- dwindle only
 
 hl.bind(mainMod .. " + F11", hl.dsp.window.fullscreen(1))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
-hl.bind("Print", hl.dsp.exec_cmd("~/.config/waybar/scripts/snapshot.sh"))
+-- hl.bind("Print", hl.dsp.exec_cmd("~/.config/waybar/scripts/snapshot.sh"))
+hl.bind("Print", hl.dsp.exec_cmd("flameshot gui"))
 hl.bind(
 	mainMod .. " + B",
 	hl.dsp.exec_cmd([[sh -c "cliphist list | 
