@@ -29,6 +29,8 @@ hl.config({
 	},
 })
 
+require("monitors")
+
 ---------------------
 ---- MY PROGRAMS ----
 ---------------------
@@ -454,7 +456,7 @@ hl.window_rule({
 -- Custom window rules
 hl.window_rule({
 	name = "vesktop-workspace",
-	match = { class = "vesktop" },
+	match = { class = "dev.vencord.Vesktop" },
 	workspace = "3 silent",
 	opacity = "0.85",
 })
