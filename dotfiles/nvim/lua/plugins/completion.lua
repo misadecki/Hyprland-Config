@@ -28,7 +28,30 @@ return { -- Autocompletion
           --   end,
           -- },
         },
-        opts = {},
+        config = function()
+          local ls = require 'luasnip'
+          ls.setup {}
+
+          local s, t, f, i = ls.snippet, ls.text_node, ls.function_node, ls.insert_node
+
+          local function guard_name()
+            return (vim.fn.expand('%:t'):upper():gsub('[^%w]', '_'))
+          end
+
+          ls.add_snippets('c', {
+            s('ifndef', {
+              t 'ifndef ',
+              f(guard_name),
+              t { '', '#define ' },
+              f(guard_name),
+              t { '', '', '' },
+              i(0),
+              t { '', '', '#endif // ' },
+              f(guard_name),
+            }),
+          })
+          ls.filetype_extend('cpp', { 'c' })
+        end,
       },
       'folke/lazydev.nvim',
     },

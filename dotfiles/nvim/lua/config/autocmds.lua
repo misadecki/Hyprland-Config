@@ -63,3 +63,4 @@ vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
     vim.fn.matchadd('DiagnosticInfo', [=[\[in,out\]]=]) -- na niebiesko
   end,
 })
+
