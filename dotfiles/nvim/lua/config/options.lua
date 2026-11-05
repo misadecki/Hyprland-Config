@@ -82,4 +82,4 @@ vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
 
-vim.lsp.set_log_level 'WARN'
+vim.lsp.log.set_level 'WARN'
